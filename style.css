@@ -60,7 +60,7 @@ body{background:#020608}
 
 /* IRON WARS REBUILD v4 — performance build */
 #game::before{
-  content:"v4";
+  content:"v8";
   position:absolute;
   right:72px;
   top:62px;
@@ -80,3 +80,9 @@ font-size:10px;box-sizing:border-box;pointer-events:none}
 #minimap small{position:absolute;bottom:5px;left:7px;color:#9daeb3}
 .mini-base{position:absolute;left:52px;top:34px;color:#e4c15b;font-size:17px}
 @media(max-width:900px){#minimap{right:80px;top:86px;width:94px;height:68px;font-size:8px}.mini-base{left:43px;top:27px}}
+
+/* V6 mobile readability */
+#minimap{opacity:.88}
+@media(max-width:700px){#minimap{transform:scale(.88);transform-origin:top right}}
+
+.system-panel{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center}.system-panel.hidden{display:none}.system-card{position:relative;width:min(720px,82vw);max-height:72vh;overflow:auto;background:linear-gradient(180deg,#10222b,#071116);border:1px solid #627984;padding:18px;color:#e7f0f2;box-shadow:0 20px 60px #000}.system-card>button{position:absolute;right:10px;top:10px;background:#1b3039;color:white;border:1px solid #607681;padding:8px}.system-card h2{color:#d9b85d;border-bottom:1px solid #334952;padding-bottom:10px}.sys-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.sys-grid button{background:#10252d;color:#eef5f6;border:1px solid #536b75;padding:14px;text-align:left;font-weight:700}.sys-grid small{display:block;color:#9fb1b7;margin-top:6px}.sys-row{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #243a43}.army-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.army-stats div{background:#0c1c23;border:1px solid #415965;padding:16px;text-align:center}.army-stats b{display:block;font-size:22px;color:#d8ba61}.worldmap{height:300px;position:relative;background:radial-gradient(circle at 50% 50%,#53633c,#293421 45%,#17251f);border:1px solid #566c61;overflow:hidden}.worldmap:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:30px 30px}.base{position:absolute;font-size:24px}.base small{display:block;white-space:nowrap;font-size:9px;color:white}.base.me{color:#e7c65d}.base.enemy{color:#d44}.base.ally{color:#5bc47a}@media(max-width:700px){.system-card{width:78vw;max-height:65vh;padding:12px}.worldmap{height:190px}.sys-grid{grid-template-columns:1fr 1fr}.army-stats{grid-template-columns:repeat(3,1fr)}}

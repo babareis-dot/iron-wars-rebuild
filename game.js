@@ -1,4 +1,4 @@
-console.log("IRON WARS REBUILD v5 WORLD BASE loaded");
+console.log("IRON WARS REBUILD v7 WORLD BASE loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -32,7 +32,7 @@ const sun=new THREE.DirectionalLight(0xffc98c,2.7);sun.position.set(-20,35,12);s
 sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
 
 // v5: DW-style large scrollable world, but original Iron Wars visuals
-const seaMat=new THREE.MeshStandardMaterial({color:0x667044,roughness:1,metalness:0});
+const seaMat=new THREE.MeshStandardMaterial({color:0x5b603d,roughness:1,metalness:0});
 const seaGeo=new THREE.PlaneGeometry(240,240,1,1);
 const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.y=1.45;sea.receiveShadow=true;scene.add(sea);
 
@@ -40,7 +40,7 @@ const island=new THREE.Mesh(new THREE.CylinderGeometry(29,31,0.7,32),new THREE.M
 island.position.y=1.15;island.receiveShadow=true;scene.add(island);
 
 // terrain patches make the world feel less empty without expensive geometry
-const patchMat=new THREE.MeshStandardMaterial({color:0x596247,roughness:1});
+const patchMat=new THREE.MeshStandardMaterial({color:0x656344,roughness:1});
 for(let i=0;i<22;i++){
  const p=new THREE.Mesh(new THREE.CircleGeometry(5+Math.random()*9,12),patchMat);
  p.rotation.x=-Math.PI/2;p.position.set((Math.random()-.5)*180,1.48,(Math.random()-.5)*180);
@@ -154,6 +154,67 @@ const starterMissiles=[
  starterMissile(-8,-10,.2),starterMissile(8,-10,-.2),
  starterMissile(-9,12,2.8),starterMissile(9,12,-2.8)
 ];
+
+// V6: lightweight world sectors / distant base plots
+const sectorMat=new THREE.MeshStandardMaterial({color:0x4d5035,roughness:1});
+const sectorRingMat=new THREE.MeshBasicMaterial({color:0x8c8150,transparent:true,opacity:.28,side:THREE.DoubleSide});
+[[-55,-42],[58,-35],[-61,49],[62,52]].forEach((q,idx)=>{
+ const plot=new THREE.Mesh(new THREE.CircleGeometry(8,16),sectorMat);
+ plot.rotation.x=-Math.PI/2;plot.position.set(q[0],1.51,q[1]);scene.add(plot);
+ const ring=new THREE.Mesh(new THREE.RingGeometry(8.5,9,24),sectorRingMat);
+ ring.rotation.x=-Math.PI/2;ring.position.set(q[0],1.53,q[1]);scene.add(ring);
+ // tiny outpost silhouette
+ const out=new THREE.Mesh(new THREE.BoxGeometry(3.2,1.6,2.5),darkMat);
+ out.position.set(q[0],2.3,q[1]);scene.add(out);
+});
+
+// V6: make starter missile sites visually easier to read without adding costly lights
+starterMissiles.forEach((m,i)=>{
+ const ring=new THREE.Mesh(new THREE.RingGeometry(1.25,1.55,18),
+   new THREE.MeshBasicMaterial({color:0x9c7e35,transparent:true,opacity:.45,side:THREE.DoubleSide}));
+ ring.rotation.x=-Math.PI/2;ring.position.y=.03;m.add(ring);
+});
+
+
+
+// V7 — denser DW-style base environment (original Iron Wars assets)
+const grassMat2=new THREE.MeshStandardMaterial({color:0x667044,roughness:1});
+const rockMat=new THREE.MeshStandardMaterial({color:0x77766b,roughness:1});
+const trunkMat=new THREE.MeshStandardMaterial({color:0x4b3928,roughness:1});
+const leafMat=new THREE.MeshStandardMaterial({color:0x24452b,roughness:1});
+function tree(x,z,s=1){
+ const g=new THREE.Group(); g.position.set(x,1.52,z); g.scale.setScalar(s);
+ const t=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,1.3,6),trunkMat);t.position.y=.65;g.add(t);
+ const a=new THREE.Mesh(new THREE.ConeGeometry(.72,1.9,7),leafMat);a.position.y=1.75;g.add(a);
+ const b=new THREE.Mesh(new THREE.ConeGeometry(.58,1.55,7),leafMat);b.position.y=2.45;g.add(b);
+ scene.add(g);
+}
+function rock(x,z,s=1){
+ const r=new THREE.Mesh(new THREE.DodecahedronGeometry(.55*s,0),rockMat);r.scale.y=.65;r.rotation.set(Math.random(),Math.random(),Math.random());r.position.set(x,1.82,z);scene.add(r);
+}
+// Keep the center readable; vegetation hugs the outer base like the reference layout.
+for(let i=0;i<78;i++){
+ const a=Math.random()*Math.PI*2, rad=20+Math.random()*8;
+ tree(Math.cos(a)*rad,Math.sin(a)*rad,.65+Math.random()*.7);
+}
+for(let i=0;i<34;i++){
+ const a=Math.random()*Math.PI*2, rad=18+Math.random()*11;
+ rock(Math.cos(a)*rad,Math.sin(a)*rad,.5+Math.random()*1.2);
+}
+// Small industrial storage groups around the base.
+function tankCluster(x,z){
+ const g=new THREE.Group();g.position.set(x,1.55,z);
+ for(let ix=-1;ix<=1;ix++) for(let iz=-1;iz<=1;iz++){
+   const c=new THREE.Mesh(new THREE.CylinderGeometry(.38,.42,.8,10),metal);c.position.set(ix*.9,.4,iz*.9);g.add(c);
+ }
+ scene.add(g);
+}
+tankCluster(-20,-3);tankCluster(19,8);
+// Ground pads visually separate structures without walls.
+const padMat=new THREE.MeshStandardMaterial({color:0x555a4b,roughness:1});
+buildings.forEach(b=>{
+ const pad=new THREE.Mesh(new THREE.CylinderGeometry(4.6,5,.16,16),padMat);pad.position.set(b.position.x,1.58,b.position.z);pad.receiveShadow=true;scene.add(pad);
+});
 
 
 const crates=[];
@@ -360,7 +421,7 @@ fence(0,-20,40,0);fence(-20,0,0,40);fence(20,0,0,40);
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 let selected=null;
 const MAX_LEVEL=25;
-const defaultState={resources:{money:0,fuel:50000,steel:100000,copper:100000,gold:25000},levels:{steel:1,fuel:1,copper:1,gold:1,hq:1,tank:1,air:1,dock:1},production:{},upgrades:{}};
+const defaultState={resources:{money:0,fuel:50000,steel:100000,copper:100000,gold:25000,titanium:0},levels:{steel:1,fuel:1,copper:1,gold:1,hq:1,tank:1,air:1,dock:1},production:{},upgrades:{}};
 let state=JSON.parse(localStorage.getItem('ironWarsRebuildV1')||'null')||structuredClone(defaultState);
 const rates={steel:[0,2500,4000],fuel:[0,1500,2500],copper:[0,2500,4000],gold:[0,120,200]};
 for(const k of Object.keys(rates)){for(let l=3;l<=25;l++)rates[k][l]=Math.round(rates[k][l-1]*1.18)}
@@ -456,7 +517,7 @@ function animate(){
  const t=clock.getElapsedTime();
  frameCount++;
  // v5 terrain is static for mobile performance
- baseFlags.forEach((f,i)=>{f.userData.flag.rotation.y=(i?Math.PI:0)+Math.sin(t*1.7+i)*.07});
+ baseFlags.forEach((f,i)=>{f.userData.flag.rotation.y=(i?Math.PI:0)+Math.sin(t*1.35+i)*.055});
  controls.target.x=THREE.MathUtils.clamp(controls.target.x,-82,82);
  controls.target.z=THREE.MathUtils.clamp(controls.target.z,-82,82);
  smokeParticles.forEach((p,i)=>{p.userData.life=(p.userData.life+.0028)%1;p.position.y=p.userData.base.y+p.userData.life*7;p.position.x=p.userData.base.x+Math.sin(t*.5+i)*p.userData.life*.8;p.scale.setScalar(.5+p.userData.life*1.5);p.material.opacity=(1-p.userData.life)*.18});
@@ -473,4 +534,28 @@ function animate(){
 
  controls.update();renderer.render(scene,camera);
 }
+
+// V8 COMPLETE: DW5-inspired strategy systems (original Iron Wars assets/gameplay)
+state.units ||= {tank:0,artillery:0,jet:0,ship:0};
+state.queue ||= [];
+state.inventory ||= {missile:4,stella:0};
+state.profile ||= {xp:0,commanderLevel:1};
+function systemOpen(title,body){systemTitle.textContent=title;systemBody.innerHTML=body;systemPanel.classList.remove('hidden')}
+closeSystem.onclick=()=>systemPanel.classList.add('hidden');
+function queueUnit(type,costSteel,costFuel,seconds){
+ if(state.resources.steel<costSteel||state.resources.fuel<costFuel){toast('Yetersiz Çelik veya Fuel');return}
+ state.resources.steel-=costSteel;state.resources.fuel-=costFuel;state.queue.push({type,end:Date.now()+seconds*1000});save();renderResources();toast(type+' üretime alındı');showProduction();
+}
+window.queueUnit=queueUnit;
+function showProduction(){
+ const q=state.queue.map(x=>`<div class="sys-row">${x.type}<b>${Math.max(0,Math.ceil((x.end-Date.now())/1000))} sn</b></div>`).join('')||'<p>Üretim kuyruğu boş.</p>';
+ systemOpen('ASKERİ ÜRETİM',`<div class="sys-grid"><button onclick="queueUnit('Tank',12000,5000,30)">🛡️ TANK<small>12K Çelik • 5K Fuel • 30sn</small></button><button onclick="queueUnit('Topçu',18000,7000,45)">💥 TOPÇU<small>18K Çelik • 7K Fuel • 45sn</small></button><button onclick="queueUnit('Jet',30000,18000,60)">✈️ JET<small>30K Çelik • 18K Fuel • 60sn</small></button><button onclick="queueUnit('Gemi',45000,22000,90)">🚢 GEMİ<small>45K Çelik • 22K Fuel • 90sn</small></button></div><h3>KUYRUK</h3>${q}`)
+}
+function showArmy(){systemOpen('BİRLİKLER',`<div class="army-stats"><div>🛡️ Tank<b>${state.units.tank||0}</b></div><div>💥 Topçu<b>${state.units.artillery||0}</b></div><div>✈️ Jet<b>${state.units.jet||0}</b></div><div>🚢 Gemi<b>${state.units.ship||0}</b></div><div>🚀 Füze<b>${state.inventory.missile||0}</b></div><div>☢️ Stella<b>${state.inventory.stella||0}</b></div></div>`)}
+function showShop(){systemOpen('MAĞAZA',`<p>Premium kaynak: Titanyum. Gerçek ödeme entegrasyonu yok; GitHub Pages sürümünde demo mağazadır.</p><div class="sys-grid"><button id="demoTitan">💎 100 TİTANYUM<small>Demo paket</small></button><button id="buyStella">☢️ STELLA<small>50 Titanyum</small></button></div><p>Titanyum: <b>${state.resources.titanium||0}</b></p>`);demoTitan.onclick=()=>{state.resources.titanium=(state.resources.titanium||0)+100;save();showShop()};buyStella.onclick=()=>{if((state.resources.titanium||0)<50)return toast('Yetersiz Titanyum');state.resources.titanium-=50;state.inventory.stella++;save();showShop()}}
+function showWorld(){systemOpen('IRON WORLD',`<div class="worldmap"><span class="base me" style="left:48%;top:45%">◆<small>SEN X500 Y500</small></span><span class="base enemy" style="left:22%;top:28%">◆<small>NPC ALPHA</small></span><span class="base enemy" style="left:72%;top:24%">◆<small>NPC BRAVO</small></span><span class="base ally" style="left:66%;top:68%">◆<small>MÜTTEFİK</small></span></div><p>Dünya haritası prototipi. Gerçek oyuncular için sonraki aşamada sunucu/veritabanı gerekir.</p>`)}
+unitsBtn.onclick=showProduction;armyBtn.onclick=showArmy;shopBtn.onclick=showShop;worldBtn.onclick=showWorld;
+function tickQueue(){let changed=false;for(let i=state.queue.length-1;i>=0;i--){if(Date.now()>=state.queue[i].end){const t=state.queue[i].type;if(t==='Tank')state.units.tank++;else if(t==='Topçu')state.units.artillery++;else if(t==='Jet')state.units.jet++;else if(t==='Gemi')state.units.ship++;state.queue.splice(i,1);state.profile.xp+=25;changed=true;toast(t+' hazır!')}}if(changed)save()}
+setInterval(tickQueue,500);
+
 animate();

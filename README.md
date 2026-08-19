@@ -1,14 +1,22 @@
-# IRON WARS REBUILD v5
 
-V5 dünya haritası temeli:
-- Büyük kaydırılabilir arazi
-- X500 / Y500 başlangıç üssü
-- Mini harita
-- Duvarsız başlangıç üssü
-- Ana merkez çevresinde 2 bayrak
-- 4 başlangıç füze savunması
-- V4 mobil performans optimizasyonları korunur
-- Mevcut kaynak / üretim / bina geliştirme altyapısı korunur
+# IRON WARS REBUILD v8.1
 
-Not: Görseller Iron Wars'a özgüdür. İleriki sürümlerde farklı oyuncu üsleri, dünya koordinatları,
-Titanyum, ileri füze sınıfları, saldırı ve birlik sistemleri eklenecek.
+Bu paket GitHub Pages için düzeltilmiştir.
+
+ZIP açıldığında `index.html` doğrudan kök dizindedir.
+GitHub reposunda şu dosyalar repo ana dizininde olmalıdır:
+- index.html
+- game.js
+- style.css
+- README.md
+- varsa diğer asset/JS klasörleri
+
+GitHub Pages: `main` branch + `/(root)`.
+
+# IRON WARS REBUILD v8 COMPLETE
+
+DW5-inspired, original browser strategy prototype.
+
+Included: 3D base, resource production, 1-minute production timers, building levels 1-25, upgrade costs/timers, persistent local save, 2 flags, 4 starter missiles, tank/artillery/jet/ship production queues, army screen, world-map prototype, titanium/Stella demo shop, fullscreen/mobile controls.
+
+Important: GitHub Pages is static hosting. Real accounts, PvP, alliances, rankings and cross-device saves require a backend/database and are not simulated as real multiplayer in this build.
