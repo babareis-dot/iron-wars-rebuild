@@ -1,4 +1,4 @@
-console.log("IRON WARS REBUILD v2.1 loaded");
+console.log("IRON WARS REBUILD v3 loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -10,8 +10,8 @@ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x172832);
-scene.fog=new THREE.FogExp2(0x233b45,0.010);
+scene.background=new THREE.Color(0x0d1a24);
+scene.fog=new THREE.FogExp2(0x152833,0.0085);
 
 const camera=new THREE.PerspectiveCamera(48,1,0.1,500);
 camera.position.set(34,30,40);
@@ -27,8 +27,8 @@ controls.minPolarAngle=Math.PI*.20;
 controls.enablePan=true;
 controls.screenSpacePanning=false;
 
-const hemi=new THREE.HemisphereLight(0x8eb9ce,0x17231c,1.15);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffd9a3,2.35);sun.position.set(-20,35,12);sun.castShadow=true;
+const hemi=new THREE.HemisphereLight(0x759fb6,0x0f1713,0.95);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffc98c,2.7);sun.position.set(-20,35,12);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
 
 const seaMat=new THREE.MeshStandardMaterial({color:0x24596d,roughness:.3,metalness:.15,transparent:true,opacity:.96});
@@ -173,6 +173,154 @@ for(let i=0;i<55;i++){
  const g=new THREE.Group();trunk.position.y=.55;crown.position.y=1.7;g.add(trunk,crown);g.position.set(Math.cos(a)*r,1.55,Math.sin(a)*r);scene.add(g);trees.push(g);
 }
 
+
+// ===================== v3 VISUAL SYSTEM =====================
+
+// procedural asphalt texture
+function canvasTexture(drawFn, size=512){
+ const c=document.createElement("canvas"); c.width=c.height=size;
+ const ctx=c.getContext("2d"); drawFn(ctx,size);
+ const tex=new THREE.CanvasTexture(c); tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ tex.colorSpace=THREE.SRGBColorSpace; return tex;
+}
+const asphaltTex=canvasTexture((ctx,s)=>{
+ ctx.fillStyle="#242b2f";ctx.fillRect(0,0,s,s);
+ for(let i=0;i<4500;i++){
+  const v=30+Math.random()*35;ctx.fillStyle=`rgb(${v},${v+3},${v+5})`;
+  const x=Math.random()*s,y=Math.random()*s,r=Math.random()*1.6+.2;ctx.fillRect(x,y,r,r);
+ }
+ ctx.strokeStyle="rgba(210,200,150,.55)";ctx.lineWidth=3;ctx.setLineDash([18,18]);
+ ctx.beginPath();ctx.moveTo(0,s/2);ctx.lineTo(s,s/2);ctx.stroke();
+},512);
+asphaltTex.repeat.set(5,1);
+
+const roadRealMat=new THREE.MeshStandardMaterial({map:asphaltTex,roughness:.92,metalness:.03});
+function roadReal(x,z,w,d,rot=0){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,.12,d),roadRealMat);
+ m.position.set(x,1.72,z);m.rotation.y=rot;m.receiveShadow=true;scene.add(m);return m;
+}
+roadReal(0,0,44,4.8,0);
+roadReal(0,0,4.8,37,0);
+roadReal(-8,-8,18,3.6,.24);
+roadReal(10,9,20,3.8,-.18);
+roadReal(11,-8,16,3.5,.12);
+
+// concrete lots
+const lotMat=new THREE.MeshStandardMaterial({color:0x414a4d,roughness:.94});
+function lot(x,z,w,d,rot=0){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,.1,d),lotMat);m.position.set(x,1.69,z);m.rotation.y=rot;m.receiveShadow=true;scene.add(m);
+}
+lot(13,1,17,11,-.08);lot(16,11,16,10,0);lot(-12,7,11,9,0);lot(0,-1,11,10,0);
+
+// runway lights
+const runwayBulbs=[];
+for(let i=-8;i<=8;i++){
+ const bulb=new THREE.PointLight(i%2?0x9edcff:0xffe5b3,.38,4,2);
+ bulb.position.set(13+i,1.9,-i*.08+2.2);scene.add(bulb);runwayBulbs.push(bulb);
+ const bulb2=bulb.clone();bulb2.position.z-=4.4;scene.add(bulb2);runwayBulbs.push(bulb2);
+}
+
+// defensive barriers
+const barrierMat=new THREE.MeshStandardMaterial({color:0x72766b,roughness:1});
+for(let i=-18;i<=18;i+=3){
+ const b1=new THREE.Mesh(new THREE.BoxGeometry(1.5,.7,.8),barrierMat);b1.position.set(i,2.05,-18);b1.rotation.y=.08;scene.add(b1);
+}
+
+// watchtowers
+function watchTower(x,z){
+ const g=new THREE.Group();g.position.set(x,1.7,z);
+ const legMat=new THREE.MeshStandardMaterial({color:0x38464c,metalness:.6,roughness:.5});
+ for(const sx of [-.7,.7]) for(const sz of [-.7,.7]){
+  const leg=new THREE.Mesh(new THREE.CylinderGeometry(.08,.12,5,6),legMat);leg.position.set(sx,2.5,sz);leg.castShadow=true;g.add(leg)
+ }
+ const deck=new THREE.Mesh(new THREE.BoxGeometry(2.2,.3,2.2),legMat);deck.position.y=5;g.add(deck);
+ const hut=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.3,1.5),new THREE.MeshStandardMaterial({color:0x53646a,roughness:.7}));hut.position.y=5.7;hut.castShadow=true;g.add(hut);
+ const beacon=new THREE.PointLight(0xff3b25,.9,8,2);beacon.position.y=6.7;g.add(beacon);
+ scene.add(g);return {g,beacon};
+}
+const watchTowers=[watchTower(-20,-16),watchTower(20,-16),watchTower(-20,16),watchTower(20,16)];
+
+// fuel tanks
+function fuelTank(x,z){
+ const g=new THREE.Group();g.position.set(x,1.7,z);
+ const tank=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,2.5,24),new THREE.MeshStandardMaterial({color:0x6a7270,metalness:.4,roughness:.55}));
+ tank.position.y=1.25;tank.castShadow=true;g.add(tank);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(1.42,.05,8,24),metal);ring.rotation.x=Math.PI/2;ring.position.y=2.1;g.add(ring);
+ scene.add(g);return g;
+}
+fuelTank(-15,-8);fuelTank(-12,-8);fuelTank(-15,-11);
+
+// more industrial stacks
+function stack(x,z,h=7){
+ const g=new THREE.Group();g.position.set(x,1.7,z);
+ const mat=new THREE.MeshStandardMaterial({color:0x4e575c,metalness:.45,roughness:.6});
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(.35,.55,h,12),mat);body.position.y=h/2;body.castShadow=true;g.add(body);
+ const red=new THREE.Mesh(new THREE.CylinderGeometry(.37,.37,.7,12),new THREE.MeshStandardMaterial({color:0xa43b2e,roughness:.7}));red.position.y=h-.8;g.add(red);
+ scene.add(g);return g;
+}
+const extraStacks=[stack(-14,6,7.5),stack(-11,6,6.5),stack(-13,-6,6.2)];
+
+// realistic-ish ship
+function makeShip(scale=1){
+ const g=new THREE.Group();
+ const hull=new THREE.Mesh(new THREE.BoxGeometry(6*scale,.8*scale,1.8*scale),new THREE.MeshStandardMaterial({color:0x26343a,metalness:.5,roughness:.55}));
+ hull.position.y=.4*scale;g.add(hull);
+ const bow=new THREE.Mesh(new THREE.ConeGeometry(.9*scale,2*scale,4),new THREE.MeshStandardMaterial({color:0x26343a,metalness:.5,roughness:.55}));
+ bow.rotation.z=-Math.PI/2;bow.position.x=3.8*scale;bow.position.y=.4*scale;g.add(bow);
+ const superstructure=new THREE.Mesh(new THREE.BoxGeometry(2*scale,1.1*scale,1.1*scale),new THREE.MeshStandardMaterial({color:0x59676c,roughness:.65}));
+ superstructure.position.set(-.6*scale,1.25*scale,0);g.add(superstructure);
+ const mast=new THREE.Mesh(new THREE.CylinderGeometry(.05*scale,.07*scale,2.2*scale,6),metal);mast.position.set(-.5*scale,2.5*scale,0);g.add(mast);
+ scene.add(g);return g;
+}
+const ships=[makeShip(1),makeShip(.7)];
+ships[0].position.set(25,.1,13);ships[0].rotation.y=Math.PI;
+ships[1].position.set(23,.1,8);ships[1].rotation.y=Math.PI*.93;
+
+// detailed tanks
+function makeTankV3(){
+ const g=new THREE.Group();
+ const olive=new THREE.MeshStandardMaterial({color:0x48523f,roughness:.72,metalness:.15});
+ const tracks=new THREE.MeshStandardMaterial({color:0x20282b,roughness:.8,metalness:.45});
+ const body=new THREE.Mesh(new THREE.BoxGeometry(2.1,.65,3),olive);body.position.y=.65;body.castShadow=true;g.add(body);
+ const leftTrack=new THREE.Mesh(new THREE.BoxGeometry(.38,.55,3.25),tracks);leftTrack.position.set(-1.05,.48,0);g.add(leftTrack);
+ const rightTrack=leftTrack.clone();rightTrack.position.x=1.05;g.add(rightTrack);
+ const turret=new THREE.Mesh(new THREE.CylinderGeometry(.72,.82,.48,12),olive);turret.position.y=1.2;g.add(turret);
+ const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,2.5,8),tracks);barrel.rotation.x=Math.PI/2;barrel.position.set(0,1.25,-1.55);g.add(barrel);
+ scene.add(g);return g;
+}
+tanks.forEach(t=>scene.remove(t));
+tanks.length=0;
+for(let i=0;i<5;i++){const t=makeTankV3();t.position.set(-18+i*3,1.8,0);tanks.push(t)}
+
+// more detailed helicopter
+scene.remove(heli);
+function helicopterV3(){
+ const g=new THREE.Group();
+ const mat=new THREE.MeshStandardMaterial({color:0x28352f,roughness:.58,metalness:.3});
+ const body=new THREE.Mesh(new THREE.SphereGeometry(1.2,16,12),mat);body.scale.set(1.5,.65,.65);g.add(body);
+ const cockpit=new THREE.Mesh(new THREE.SphereGeometry(.75,12,8),new THREE.MeshStandardMaterial({color:0x16272e,metalness:.5,roughness:.25}));cockpit.scale.set(1,.55,.55);cockpit.position.x=1.3;g.add(cockpit);
+ const tail=new THREE.Mesh(new THREE.BoxGeometry(3,.18,.18),mat);tail.position.x=-2.5;g.add(tail);
+ const rotor=new THREE.Mesh(new THREE.BoxGeometry(5.8,.035,.12),darkMat);rotor.position.y=.9;g.add(rotor);
+ const rotor2=new THREE.Mesh(new THREE.BoxGeometry(.08,1.5,.08),darkMat);rotor2.position.x=-4;g.add(rotor2);
+ const light=new THREE.SpotLight(0xe8f4ff,1.5,25,.35,.6,1.5);light.position.set(1,-.2,0);light.target.position.set(6,-8,0);g.add(light,light.target);
+ g.userData.rotor=rotor;g.userData.rotor2=rotor2;scene.add(g);return g;
+}
+const heliV3=helicopterV3();heliV3.position.set(10,13,-12);
+
+// fence line
+const fenceMat=new THREE.MeshStandardMaterial({color:0x4d5a5f,metalness:.6,roughness:.5});
+function fence(x,z,w,d){
+ const g=new THREE.Group();
+ if(w>0){
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(w,.05,.05),fenceMat);rail.position.set(x,2.3,z);scene.add(rail);
+  for(let i=-w/2;i<=w/2;i+=2){const p=new THREE.Mesh(new THREE.CylinderGeometry(.03,.04,1.4,5),fenceMat);p.position.set(x+i,2,z);scene.add(p)}
+ }else{
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(.05,.05,d),fenceMat);rail.position.set(x,2.3,z);scene.add(rail);
+  for(let i=-d/2;i<=d/2;i+=2){const p=new THREE.Mesh(new THREE.CylinderGeometry(.03,.04,1.4,5),fenceMat);p.position.set(x,2,z+i);scene.add(p)}
+ }
+}
+fence(0,-20,40,0);fence(-20,0,0,40);fence(20,0,0,40);
+
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 let selected=null;
 const MAX_LEVEL=25;
@@ -264,8 +412,13 @@ function animate(){
  pos.needsUpdate=true;sea.geometry.computeVertexNormals();
  smokeParticles.forEach((p,i)=>{p.userData.life=(p.userData.life+.0028)%1;p.position.y=p.userData.base.y+p.userData.life*7;p.position.x=p.userData.base.x+Math.sin(t*.5+i)*p.userData.life*.8;p.scale.setScalar(.5+p.userData.life*1.5);p.material.opacity=(1-p.userData.life)*.18});
  tanks.forEach((tank,i)=>{const a=t*.12+i*2.1;tank.position.x=Math.sin(a)*15;tank.position.z=Math.cos(a)*7;tank.rotation.y=Math.atan2(Math.cos(a)*15,-Math.sin(a)*7)});
- heli.position.x=10+Math.sin(t*.24)*10;heli.position.z=-12+Math.cos(t*.24)*6;heli.position.y=13+Math.sin(t*.8)*.6;heli.userData.rotor.rotation.y=t*20;heli.rotation.y=-t*.24;
+ heliV3.position.x=10+Math.sin(t*.24)*10;heliV3.position.z=-12+Math.cos(t*.24)*6;heliV3.position.y=13+Math.sin(t*.8)*.6;heliV3.userData.rotor.rotation.y=t*20;heliV3.userData.rotor2.rotation.x=t*18;heliV3.rotation.y=-t*.24;
  glowMat.emissiveIntensity=1.8+Math.sin(t*2.2)*.5;
+ runwayBulbs.forEach((b,i)=>b.intensity=.18+Math.max(0,Math.sin(t*2.8-i*.45))*.55);
+ watchTowers.forEach((w,i)=>w.beacon.intensity=.45+Math.max(0,Math.sin(t*3+i))*.95);
+ ships[0].position.x=24+Math.sin(t*.08)*2.2;
+ ships[1].position.x=22+Math.sin(t*.11+1)*1.5;
+
  radarUnit.userData.dish.rotation.z=t*.45;
  towers.forEach((tw,i)=>tw.userData.beacon.material.emissiveIntensity=2.2+Math.sin(t*4+i)*1.4);
 
