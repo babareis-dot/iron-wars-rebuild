@@ -1,0 +1,35 @@
+{
+  "maxLevel": 25,
+  "upgradeCostCopper": [
+    50000,
+    100000,
+    300000,
+    500000,
+    750000,
+    1100000,
+    1600000,
+    2300000,
+    3200000,
+    4500000
+  ],
+  "visualTiers": [
+    1,
+    5,
+    10,
+    15,
+    20,
+    25
+  ],
+  "buildings": [
+    "HQ",
+    "Çelik Fabrikası",
+    "Bakır Fabrikası",
+    "Fuel Tesisi",
+    "Radar",
+    "Araç Merkezi",
+    "Tank Fabrikası",
+    "Araştırma Merkezi",
+    "Hava Üssü",
+    "Tersane"
+  ]
+}

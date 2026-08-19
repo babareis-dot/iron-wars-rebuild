@@ -1,106 +1,12 @@
-<!doctype html>
-<html lang="tr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#071015">
-<title>IRON WARS — V9 DW Base</title>
-<link rel="stylesheet" href="style.css?v=80">
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
-  }
-}
-</script>
-</head>
-<body>
-<div id="rotate">
-  <div class="rotate-card">
-    <div class="rotate-icon">📱↻</div>
-    <h1>IRON WARS</h1>
-    <p>Telefonu yatay çevir.</p>
-  </div>
+<!doctype html><html lang="tr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>IRON WARS RTS DEMO</title><link rel="stylesheet" href="css/game.css">
+</head><body>
+<header id="top"><div class="logo"><b>IRON WARS</b><small>RTS DEMO • BIG BUILD</small></div><div id="resources"></div><button id="fullscreen">⛶</button></header>
+<div id="layout">
+<aside id="left"><div class="player"><b>★ COMMANDER</b><span>Seviye 1</span></div><button>🌍 DÜNYA</button><button>🏗 İNŞAAT</button><button>📡 MENZİL</button><button>🧬 ARAŞTIRMA</button></aside>
+<section id="viewport"><canvas id="world"></canvas><div id="minimap"><canvas id="mini"></canvas><span id="coords">X:500 Y:500</span></div><div id="hint">Sürükle • Yakınlaştır • Binaya dokun</div><div id="panel" class="hidden"></div></section>
+<aside id="right"><button>🎁<small>ETKİNLİK</small></button><button>🏆<small>SIRALAMA</small></button><button>🛡<small>İTTİFAK</small></button><button>✉<small>POSTA</small></button></aside>
 </div>
-
-<div id="start">
-  <div class="start-card">
-    <h1>IRON WARS</h1>
-    <small>GLOBAL CONFLICT — REBUILD</small>
-    <p>Gerçek zamanlı 3D askeri üs prototipi</p>
-    <button id="startBtn">OYUNA BAŞLA</button>
-  </div>
-</div>
-
-<div id="game">
-  <canvas id="scene"></canvas>
-
-  <header class="topbar">
-    <div class="brand"><b>IRON WARS</b><small>REBUILD v9 DW BASE</small></div>
-    <div class="resources">
-      <div>💵 <b id="money">0</b><small>PARA</small></div>
-      <div>🛢️ <b id="fuel">50.000</b><small>FUEL</small></div>
-      <div>🔩 <b id="steel">100.000</b><small>ÇELİK</small></div>
-      <div>🟫 <b id="copper">100.000</b><small>BAKIR</small></div>
-      <div>🪙 <b id="gold">25.000</b><small>ALTIN</small></div>
-    </div>
-    <button id="fullscreen">⛶</button>
-  </header>
-
-  <aside class="left-panel">
-    <div class="commander">
-      <div class="avatar">★</div>
-      <div><b>Commander</b><small>Seviye 1</small></div>
-    </div>
-    <button id="worldBtn" data-action="world">🌍 DÜNYA</button>
-    <button data-action="build">🏗️ İNŞAAT</button>
-    <button data-action="research">🧬 ARAŞTIRMA</button>
-  </aside>
-
-  <aside class="right-panel">
-    <button>🎁<span>ETKİNLİK</span></button>
-    <button>🏆<span>SIRALAMA</span></button>
-    <button>🛡️<span>İTTİFAK</span></button>
-    <button>✉️<span>POSTA</span></button>
-  </aside>
-
-  <footer class="dock">
-    <button>🏛️<span>ÜSLER</span></button>
-    <button>🏢<span>BİNALAR</span></button>
-    <button id="unitsBtn">🪖<span>ÜRETİM</span></button>
-    <button id="armyBtn">⚔️<span>BİRLİKLER</span></button>
-    <button>📦<span>ENVANTER</span></button>
-    <button id="shopBtn" class="shop">🛒<span>MAĞAZA</span></button>
-  </footer>
-
-  <div id="minimap"><b>IRON WORLD</b><div class="mini-base">◆</div><small>X:500 Y:500</small></div>
-  <div id="hint">Haritayı sürükle • İki parmakla yakınlaştır • Üssün: X500 Y500</div>
-</div>
-
-<div id="panel" class="hidden">
-  <div class="panel-card">
-    <button id="closePanel">✕</button>
-    <div id="panelIcon" class="panel-icon">🏭</div>
-    <h2 id="panelTitle">Bina</h2>
-    <div id="panelLevel">Seviye 1 / 25</div>
-    <div class="panel-grid">
-      <div><small>ÜRETİM</small><b id="panelProduction">—</b></div>
-      <div><small>DAYANIKLILIK</small><b>100%</b></div>
-      <div><small>GÜÇ</small><b id="panelPower">1.000</b></div>
-    </div>
-    <div id="prodInfo" class="info"></div>
-    <div id="timer" class="timer">Hazır</div>
-    <div class="progress"><i id="progressBar"></i></div>
-    <div class="actions">
-      <button id="produceBtn">ÜRET • 01:00</button>
-      <button id="upgradeBtn">GELİŞTİR</button>
-    </div>
-  </div>
-</div>
-
-<div id="systemPanel" class="system-panel hidden"><div class="system-card"><button id="closeSystem">✕</button><h2 id="systemTitle">SİSTEM</h2><div id="systemBody"></div></div></div>
-<div id="toast"></div>
-<script type="module" src="game.js?v=80"></script>
-</body>
-</html>
+<nav><button>🏛<small>ÜSLER</small></button><button>🏢<small>BİNALAR</small></button><button>🪖<small>ÜRETİM</small></button><button>⚔<small>BİRLİKLER</small></button><button>📦<small>ENVANTER</small></button><button>🛒<small>MAĞAZA</small></button></nav>
+<script type="module" src="js/main.js"></script></body></html>
