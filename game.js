@@ -1,3 +1,4 @@
+console.log("IRON WARS REBUILD v2.1 loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 

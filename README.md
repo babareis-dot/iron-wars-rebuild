@@ -1,4 +1,4 @@
-# IRON WARS — REBUILD v2
+# IRON WARS — REBUILD v2.1
 
 Bu proje önceki sürümlerden bağımsız, sıfırdan hazırlanmış gerçek 3D tarayıcı RTS temelidir.
 
@@ -41,3 +41,6 @@ Sonraki aşamalar:
 
 ## v2
 Daha karanlık/sinematik ışık, radar, askeri kuleler, pist, hangarlar, liman iskeleleri, üs duvarları, sokak lambaları, kasalar ve daha detaylı askeri sahne eklendi.
+
+## v2.1
+Cache-busting eklendi: `style.css?v=21` ve `game.js?v=21`. Ekranda ayrıca küçük `v2.1` rozeti görünür; böylece GitHub Pages'in yeni sürümü açtığı hemen anlaşılır.

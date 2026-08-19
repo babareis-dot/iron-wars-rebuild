@@ -48,3 +48,18 @@ body{background:#020608}
 .topbar,.left-panel,.right-panel,.dock,#hint{z-index:5}
 .topbar{background:linear-gradient(180deg,rgba(4,11,15,.97),rgba(5,14,19,.91));box-shadow:0 4px 20px #0008}
 .left-panel button,.right-panel button,.dock button,.commander{backdrop-filter:blur(8px);box-shadow:inset 0 0 18px #0005}
+
+/* v2.1 deployment marker */
+#game::before{
+  content:"v2.1";
+  position:absolute;
+  right:72px;
+  top:62px;
+  z-index:9;
+  padding:4px 7px;
+  font:700 9px Arial;
+  color:#f4d577;
+  background:rgba(4,12,16,.86);
+  border:1px solid #8a7132;
+  pointer-events:none;
+}
