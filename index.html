@@ -2,10 +2,15 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>IRON WARS RTS DEMO</title><link rel="stylesheet" href="css/game.css">
 </head><body>
-<header id="top"><div class="logo"><b>IRON WARS</b><small>RTS DEMO • BIG BUILD</small></div><div id="resources"></div><button id="fullscreen">⛶</button></header>
+<header id="top"><div class="logo"><b>IRON WARS</b><small>RTS DEMO XL V2 • COMBAT BUILD</small></div><div id="resources"></div><button id="fullscreen">⛶</button></header>
 <div id="layout">
 <aside id="left"><div class="player"><b>★ COMMANDER</b><span>Seviye 1</span></div><button>🌍 DÜNYA</button><button>🏗 İNŞAAT</button><button>📡 MENZİL</button><button>🧬 ARAŞTIRMA</button></aside>
-<section id="viewport"><canvas id="world"></canvas><div id="minimap"><canvas id="mini"></canvas><span id="coords">X:500 Y:500</span></div><div id="hint">Sürükle • Yakınlaştır • Binaya dokun</div><div id="panel" class="hidden"></div></section>
+<section id="viewport"><canvas id="world"></canvas><div id="minimap"><canvas id="mini"></canvas><span id="coords">X:500 Y:500</span></div><div id="hint">Sürükle • Yakınlaştır • Binaya dokun</div><div id="panel" class="hidden"></div><div id="combatHud" class="combatHud">
+  <b>⚔ SAVAŞ DEMOSU</b>
+  <span id="combatText">Haritadaki düşman üssüne dokun.</span>
+  <button id="attackBtn" disabled>SALDIR</button>
+</div>
+</section>
 <aside id="right"><button>🎁<small>ETKİNLİK</small></button><button>🏆<small>SIRALAMA</small></button><button>🛡<small>İTTİFAK</small></button><button>✉<small>POSTA</small></button></aside>
 </div>
 <nav><button>🏛<small>ÜSLER</small></button><button>🏢<small>BİNALAR</small></button><button>🪖<small>ÜRETİM</small></button><button>⚔<small>BİRLİKLER</small></button><button>📦<small>ENVANTER</small></button><button>🛒<small>MAĞAZA</small></button></nav>

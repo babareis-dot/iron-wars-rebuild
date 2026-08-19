@@ -35,3 +35,16 @@ Bu sürüm sadece dosya şişirmek için hazırlanmadı. Gerçek kullanılabilir
 - building/unit veri JSON dosyaları
 
 Web için 700-800 MB tek yükleme önerilmez. Gerçek ürün sürümünde ağır assetler CDN + lazy loading ile bölünmelidir.
+
+## XL V2 Combat Build
+- Dünya haritasında 3 demo düşman üssü
+- Düşman üssüne dokunarak hedef seçme
+- SALDIR komutu
+- 5 tankın hedefe doğru hareket etmesi
+- Tank ateşi / mermi animasyonu
+- Patlama + duman efektleri
+- Düşman üs can barı
+- Üs yok edilince saldırının tamamlanması
+- Haritada devriye araçları
+- Mini haritada düşman üs işaretleri
+- Mevcut üretim / geliştirme / kaynak sistemi korunur

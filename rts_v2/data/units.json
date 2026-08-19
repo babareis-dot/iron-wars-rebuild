@@ -1,0 +1,34 @@
+{
+  "tankClasses": [
+    "MK-1",
+    "MK-2",
+    "MK-3",
+    "MK-4",
+    "MK-5",
+    "MK-6",
+    "MK-7",
+    "MK-8"
+  ],
+  "missileClasses": [
+    "IRON-1",
+    "IRON-2",
+    "IRON-3",
+    "IRON-4",
+    "IRON-5",
+    "IRON-6",
+    "IRON-7",
+    "IRON-8",
+    "IRON-9",
+    "IRON-10",
+    "IRON-11",
+    "IRON-12"
+  ],
+  "future": [
+    "jet",
+    "helicopter",
+    "ship",
+    "artillery",
+    "AA",
+    "drone"
+  ]
+}
