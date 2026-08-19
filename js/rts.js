@@ -1,4 +1,4 @@
-const A="../assets/";
+const A="./assets/";
 export class Game{
 constructor(canvas,mini){
  this.c=canvas;this.x=canvas.getContext("2d");this.m=mini;this.mx=mini.getContext("2d");
