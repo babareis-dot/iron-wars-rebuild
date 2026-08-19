@@ -51,23 +51,24 @@ body{background:#020608}
 
 
 /* ===== IRON WARS REBUILD v3 ===== */
+.topbar{
+  background:linear-gradient(180deg,rgba(3,10,14,.98),rgba(7,16,22,.93))!important;
+}
+.resources div{
+  background:linear-gradient(180deg,#10202a,#081319)!important;
+}
+
+/* IRON WARS REBUILD v4 — performance build */
 #game::before{
-  content:"v3";
+  content:"v4";
   position:absolute;
   right:72px;
   top:62px;
   z-index:9;
   padding:4px 8px;
   font:700 9px Arial;
-  color:#f6dc82;
+  color:#d9f0ff;
   background:rgba(4,12,16,.88);
-  border:1px solid #9f8136;
+  border:1px solid #55798c;
   pointer-events:none;
-  box-shadow:0 0 14px rgba(216,171,55,.25);
-}
-.topbar{
-  background:linear-gradient(180deg,rgba(3,10,14,.98),rgba(7,16,22,.93))!important;
-}
-.resources div{
-  background:linear-gradient(180deg,#10202a,#081319)!important;
 }

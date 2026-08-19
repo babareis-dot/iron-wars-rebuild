@@ -1,12 +1,12 @@
-console.log("IRON WARS REBUILD v3 loaded");
+console.log("IRON WARS REBUILD v4 loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const canvas=document.getElementById('scene');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.15));
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.shadowMap.type=THREE.PCFShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 
 const scene=new THREE.Scene();
@@ -29,7 +29,7 @@ controls.screenSpacePanning=false;
 
 const hemi=new THREE.HemisphereLight(0x759fb6,0x0f1713,0.95);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffc98c,2.7);sun.position.set(-20,35,12);sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
+sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
 
 const seaMat=new THREE.MeshStandardMaterial({color:0x24596d,roughness:.3,metalness:.15,transparent:true,opacity:.96});
 const seaGeo=new THREE.PlaneGeometry(180,180,48,48);
@@ -111,9 +111,9 @@ dockPier(17,15,12,2);dockPier(20,11,2,10);
 
 function lamp(x,z){
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,2.3,6),metal);pole.position.set(x,2.85,z);scene.add(pole);
- const bulb=new THREE.PointLight(0xffb75b,.8,6,2);bulb.position.set(x,4,z);scene.add(bulb);
+ const bulb=new THREE.Mesh(new THREE.SphereGeometry(.11,6,6),amberGlow);bulb.position.set(x,4,z);scene.add(bulb);
 }
-for(let x=-16;x<=16;x+=5){lamp(x,2.8);lamp(x,-2.8)}
+for(let x=-16;x<=16;x+=8){lamp(x,2.8);lamp(x,-2.8)}
 
 function wallSegment(x,z,w,d){
  const m=new THREE.Mesh(new THREE.BoxGeometry(w,1.2,d),concrete);m.position.set(x,2.1,z);m.castShadow=true;scene.add(m);
@@ -121,9 +121,9 @@ function wallSegment(x,z,w,d){
 wallSegment(0,-23,38,.6);wallSegment(-22,0,.6,38);wallSegment(22,0,.6,38);
 
 const crates=[];
-for(let i=0;i<18;i++){
+for(let i=0;i<10;i++){
  const c=new THREE.Mesh(new THREE.BoxGeometry(.7,.7,.7),new THREE.MeshStandardMaterial({color:0x705234,roughness:.9}));
- c.position.set(-5+Math.random()*10,2.05,14+Math.random()*3);c.rotation.y=Math.random()*Math.PI;c.castShadow=true;scene.add(c);crates.push(c);
+ c.position.set(-5+Math.random()*10,2.05,14+Math.random()*3);c.rotation.y=Math.random()*Math.PI;c.castShadow=false;scene.add(c);crates.push(c);
 }
 
 
@@ -136,7 +136,7 @@ chimney(buildings.find(b=>b.userData.id==='fuel'),1.4,0,5);
 const smokeParticles=[];
 function addSmokeEmitter(building){
  const origin=new THREE.Vector3();building.getWorldPosition(origin);origin.y+=7;
- for(let i=0;i<14;i++){
+ for(let i=0;i<8;i++){
    const mat=new THREE.MeshBasicMaterial({color:0xb8c1c3,transparent:true,opacity:.16,depthWrite:false});
    const p=new THREE.Mesh(new THREE.SphereGeometry(.45,8,8),mat);
    p.position.copy(origin);p.position.y+=i*.55;p.userData={base:origin.clone(),phase:i/14,life:i/14};
@@ -166,11 +166,11 @@ function helicopter(){
 const heli=helicopter();heli.position.set(10,13,-12);
 
 const trees=[];
-for(let i=0;i<55;i++){
+for(let i=0;i<32;i++){
  const a=Math.random()*Math.PI*2,r=20+Math.random()*6;
  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,1.1,6),new THREE.MeshStandardMaterial({color:0x5c442c}));
  const crown=new THREE.Mesh(new THREE.ConeGeometry(.7,2.2,7),new THREE.MeshStandardMaterial({color:0x2e5434}));
- const g=new THREE.Group();trunk.position.y=.55;crown.position.y=1.7;g.add(trunk,crown);g.position.set(Math.cos(a)*r,1.55,Math.sin(a)*r);scene.add(g);trees.push(g);
+ const g=new THREE.Group();trunk.position.y=.55;crown.position.y=1.7;trunk.castShadow=false;crown.castShadow=false;g.add(trunk,crown);g.position.set(Math.cos(a)*r,1.55,Math.sin(a)*r);scene.add(g);trees.push(g);
 }
 
 
@@ -214,10 +214,10 @@ lot(13,1,17,11,-.08);lot(16,11,16,10,0);lot(-12,7,11,9,0);lot(0,-1,11,10,0);
 
 // runway lights
 const runwayBulbs=[];
-for(let i=-8;i<=8;i++){
- const bulb=new THREE.PointLight(i%2?0x9edcff:0xffe5b3,.38,4,2);
- bulb.position.set(13+i,1.9,-i*.08+2.2);scene.add(bulb);runwayBulbs.push(bulb);
- const bulb2=bulb.clone();bulb2.position.z-=4.4;scene.add(bulb2);runwayBulbs.push(bulb2);
+for(let i=-8;i<=8;i+=2){
+ const m1=new THREE.Mesh(new THREE.SphereGeometry(.08,6,6),new THREE.MeshBasicMaterial({color:i%4?0x9edcff:0xffe5b3}));
+ m1.position.set(13+i,1.9,-i*.08+2.2);scene.add(m1);runwayBulbs.push(m1);
+ const m2=m1.clone();m2.position.z-=4.4;scene.add(m2);runwayBulbs.push(m2);
 }
 
 // defensive barriers
@@ -290,7 +290,7 @@ function makeTankV3(){
 }
 tanks.forEach(t=>scene.remove(t));
 tanks.length=0;
-for(let i=0;i<5;i++){const t=makeTankV3();t.position.set(-18+i*3,1.8,0);tanks.push(t)}
+for(let i=0;i<3;i++){const t=makeTankV3();t.position.set(-18+i*3,1.8,0);tanks.push(t)}
 
 // more detailed helicopter
 scene.remove(heli);
@@ -401,20 +401,34 @@ startBtn.addEventListener('click',()=>{start.classList.add('hidden')});
 function resize(){
  const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
 }
+
+const isMobile=matchMedia("(max-width: 900px)").matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
+if(isMobile){
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));
+ sun.shadow.mapSize.set(768,768);
+ scene.fog.density=.0105;
+}
+
 addEventListener('resize',resize);resize();renderResources();setInterval(tickEconomy,250);
 
-const clock=new THREE.Clock();
+const clock=new THREE.Clock();let frameCount=0;
+let pageVisible=true;
+document.addEventListener("visibilitychange",()=>pageVisible=!document.hidden);
 function animate(){
  requestAnimationFrame(animate);
+ if(!pageVisible)return;
  const t=clock.getElapsedTime();
- const pos=sea.geometry.attributes.position;
- for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);pos.setZ(i,Math.sin(x*.12+t)*.18+Math.cos(y*.1+t*.8)*.12)}
- pos.needsUpdate=true;sea.geometry.computeVertexNormals();
+ frameCount++;
+ if(frameCount%3===0){
+  const pos=sea.geometry.attributes.position;
+  for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);pos.setZ(i,Math.sin(x*.12+t)*.14+Math.cos(y*.1+t*.8)*.09)}
+  pos.needsUpdate=true;
+ }
  smokeParticles.forEach((p,i)=>{p.userData.life=(p.userData.life+.0028)%1;p.position.y=p.userData.base.y+p.userData.life*7;p.position.x=p.userData.base.x+Math.sin(t*.5+i)*p.userData.life*.8;p.scale.setScalar(.5+p.userData.life*1.5);p.material.opacity=(1-p.userData.life)*.18});
  tanks.forEach((tank,i)=>{const a=t*.12+i*2.1;tank.position.x=Math.sin(a)*15;tank.position.z=Math.cos(a)*7;tank.rotation.y=Math.atan2(Math.cos(a)*15,-Math.sin(a)*7)});
  heliV3.position.x=10+Math.sin(t*.24)*10;heliV3.position.z=-12+Math.cos(t*.24)*6;heliV3.position.y=13+Math.sin(t*.8)*.6;heliV3.userData.rotor.rotation.y=t*20;heliV3.userData.rotor2.rotation.x=t*18;heliV3.rotation.y=-t*.24;
  glowMat.emissiveIntensity=1.8+Math.sin(t*2.2)*.5;
- runwayBulbs.forEach((b,i)=>b.intensity=.18+Math.max(0,Math.sin(t*2.8-i*.45))*.55);
+ runwayBulbs.forEach((b,i)=>{const s=.75+Math.max(0,Math.sin(t*2.8-i*.45))*.45;b.scale.setScalar(s)});
  watchTowers.forEach((w,i)=>w.beacon.intensity=.45+Math.max(0,Math.sin(t*3+i))*.95);
  ships[0].position.x=24+Math.sin(t*.08)*2.2;
  ships[1].position.x=22+Math.sin(t*.11+1)*1.5;

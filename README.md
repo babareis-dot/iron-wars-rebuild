@@ -1,4 +1,4 @@
-# IRON WARS — REBUILD v3
+# IRON WARS — REBUILD v4
 
 Bu proje önceki sürümlerden bağımsız, sıfırdan hazırlanmış gerçek 3D tarayıcı RTS temelidir.
 
@@ -42,10 +42,10 @@ Sonraki aşamalar:
 ## v2
 Daha karanlık/sinematik ışık, radar, askeri kuleler, pist, hangarlar, liman iskeleleri, üs duvarları, sokak lambaları, kasalar ve daha detaylı askeri sahne eklendi.
 
-## v3
-Cache-busting eklendi: `style.css?v=21` ve `game.js?v=21`. Ekranda ayrıca küçük `v3` rozeti görünür; böylece GitHub Pages'in yeni sürümü açtığı hemen anlaşılır.
+## v4
+Cache-busting eklendi: `style.css?v=21` ve `game.js?v=21`. Ekranda ayrıca küçük `v4` rozeti görünür; böylece GitHub Pages'in yeni sürümü açtığı hemen anlaşılır.
 
-## v3 görsel yükseltme
+## v4 görsel yükseltme
 - Daha karanlık/sinematik gece atmosferi
 - Prosedürel asfalt dokusu ve yol şeritleri
 - Pist ve pist ışıkları
@@ -60,4 +60,19 @@ Cache-busting eklendi: `style.css?v=21` ve `game.js?v=21`. Ekranda ayrıca küç
 - Üs içi daha yoğun ışıklandırma
 - Çalışan ekonomi ve bina tıklama sistemi korunur
 
-Not: v3 hâlâ tamamen tarayıcı içinde prosedürel 3D model üretir; dışarıdan ağır model paketi gerektirmez.
+Not: v4 hâlâ tamamen tarayıcı içinde prosedürel 3D model üretir; dışarıdan ağır model paketi gerektirmez.
+
+## v4 performans optimizasyonları
+- Mobilde render pixel ratio düşürüldü.
+- Antialias kapatıldı.
+- Gölge haritası 2048 -> 1024, mobilde 768.
+- PCFSoftShadow yerine daha ucuz PCFShadow.
+- Ağaç sayısı azaltıldı.
+- Duman parçacıkları azaltıldı.
+- Tank sayısı 5 -> 3.
+- Kasalar 18 -> 10.
+- Çok sayıda PointLight kaldırılıp emissive mesh ile değiştirildi.
+- Pist ışıkları gerçek ışık yerine düşük maliyetli emissive obje.
+- Deniz geometri güncellemesi her frame yerine her 3 frame.
+- Sekme arka plandaysa render güncellemeleri duraklatılır.
+- V3 askeri görünümü mümkün olduğunca korunur.
