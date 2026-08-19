@@ -72,3 +72,11 @@ body{background:#020608}
   border:1px solid #55798c;
   pointer-events:none;
 }
+
+#minimap{position:fixed;right:92px;top:88px;width:112px;height:82px;z-index:8;
+background:rgba(5,12,15,.86);border:1px solid #53646c;color:#d9e5e8;padding:7px;
+font-size:10px;box-sizing:border-box;pointer-events:none}
+#minimap b{display:block;color:#d7b75c;margin-bottom:6px}
+#minimap small{position:absolute;bottom:5px;left:7px;color:#9daeb3}
+.mini-base{position:absolute;left:52px;top:34px;color:#e4c15b;font-size:17px}
+@media(max-width:900px){#minimap{right:80px;top:86px;width:94px;height:68px;font-size:8px}.mini-base{left:43px;top:27px}}

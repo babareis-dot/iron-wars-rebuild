@@ -1,4 +1,4 @@
-console.log("IRON WARS REBUILD v4 loaded");
+console.log("IRON WARS REBUILD v5 WORLD BASE loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -11,7 +11,7 @@ renderer.outputColorSpace=THREE.SRGBColorSpace;
 
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x0d1a24);
-scene.fog=new THREE.FogExp2(0x152833,0.0085);
+scene.fog=new THREE.FogExp2(0x17231b,0.0045);
 
 const camera=new THREE.PerspectiveCamera(48,1,0.1,500);
 camera.position.set(34,30,40);
@@ -21,7 +21,7 @@ controls.target.set(0,0,0);
 controls.enableDamping=true;
 controls.dampingFactor=.06;
 controls.minDistance=24;
-controls.maxDistance=62;
+controls.maxDistance=105;
 controls.maxPolarAngle=Math.PI*.48;
 controls.minPolarAngle=Math.PI*.20;
 controls.enablePan=true;
@@ -31,12 +31,21 @@ const hemi=new THREE.HemisphereLight(0x759fb6,0x0f1713,0.95);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffc98c,2.7);sun.position.set(-20,35,12);sun.castShadow=true;
 sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
 
-const seaMat=new THREE.MeshStandardMaterial({color:0x24596d,roughness:.3,metalness:.15,transparent:true,opacity:.96});
-const seaGeo=new THREE.PlaneGeometry(180,180,48,48);
-const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.y=-1.6;scene.add(sea);
+// v5: DW-style large scrollable world, but original Iron Wars visuals
+const seaMat=new THREE.MeshStandardMaterial({color:0x667044,roughness:1,metalness:0});
+const seaGeo=new THREE.PlaneGeometry(240,240,1,1);
+const sea=new THREE.Mesh(seaGeo,seaMat);sea.rotation.x=-Math.PI/2;sea.position.y=1.45;sea.receiveShadow=true;scene.add(sea);
 
-const island=new THREE.Mesh(new THREE.CylinderGeometry(28,34,3.4,8),new THREE.MeshStandardMaterial({color:0x526448,roughness:1}));
-island.position.y=-.2;island.receiveShadow=true;scene.add(island);
+const island=new THREE.Mesh(new THREE.CylinderGeometry(29,31,0.7,32),new THREE.MeshStandardMaterial({color:0x49543b,roughness:1}));
+island.position.y=1.15;island.receiveShadow=true;scene.add(island);
+
+// terrain patches make the world feel less empty without expensive geometry
+const patchMat=new THREE.MeshStandardMaterial({color:0x596247,roughness:1});
+for(let i=0;i<22;i++){
+ const p=new THREE.Mesh(new THREE.CircleGeometry(5+Math.random()*9,12),patchMat);
+ p.rotation.x=-Math.PI/2;p.position.set((Math.random()-.5)*180,1.48,(Math.random()-.5)*180);
+ p.scale.y=.55+Math.random()*.7;scene.add(p);
+}
 
 const roadMat=new THREE.MeshStandardMaterial({color:0x2b3235,roughness:.95});
 function road(x,z,w,d,rot=0){
@@ -118,7 +127,34 @@ for(let x=-16;x<=16;x+=8){lamp(x,2.8);lamp(x,-2.8)}
 function wallSegment(x,z,w,d){
  const m=new THREE.Mesh(new THREE.BoxGeometry(w,1.2,d),concrete);m.position.set(x,2.1,z);m.castShadow=true;scene.add(m);
 }
-wallSegment(0,-23,38,.6);wallSegment(-22,0,.6,38);wallSegment(22,0,.6,38);
+// v5 başlangıç üssü duvarsız
+// Two base flags
+function baseFlag(x,z,flip=1){
+ const g=new THREE.Group();g.position.set(x,1.55,z);
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.045,.06,4.4,6),metal);pole.position.y=2.2;g.add(pole);
+ const flag=new THREE.Mesh(new THREE.PlaneGeometry(1.45,.8),new THREE.MeshStandardMaterial({color:0x9b1d1d,side:THREE.DoubleSide,roughness:.75}));
+ flag.position.set(.72*flip,3.75,0);flag.rotation.y=flip<0?Math.PI:0;g.add(flag);g.userData.flag=flag;scene.add(g);return g;
+}
+const baseFlags=[baseFlag(-4,-5,1),baseFlag(4,-5,-1)];
+
+// Four starter missile launchers, no wall required
+function starterMissile(x,z,rot=0){
+ const g=new THREE.Group();g.position.set(x,1.62,z);g.rotation.y=rot;
+ const pad=new THREE.Mesh(new THREE.CylinderGeometry(1.05,1.2,.28,12),darkMat);pad.position.y=.14;g.add(pad);
+ const tubeMat=new THREE.MeshStandardMaterial({color:0x4b5748,roughness:.65,metalness:.25});
+ for(let i=-1;i<=1;i+=2){
+   const tube=new THREE.Mesh(new THREE.CylinderGeometry(.22,.27,2.8,8),tubeMat);
+   tube.rotation.z=-.28;tube.position.set(i*.32,1.55,0);g.add(tube);
+   const tip=new THREE.Mesh(new THREE.ConeGeometry(.22,.55,8),new THREE.MeshStandardMaterial({color:0x6f756b,roughness:.6}));
+   tip.rotation.z=-.28;tip.position.set(i*.32+.39,2.87,0);g.add(tip);
+ }
+ scene.add(g);return g;
+}
+const starterMissiles=[
+ starterMissile(-8,-10,.2),starterMissile(8,-10,-.2),
+ starterMissile(-9,12,2.8),starterMissile(9,12,-2.8)
+];
+
 
 const crates=[];
 for(let i=0;i<10;i++){
@@ -419,11 +455,10 @@ function animate(){
  if(!pageVisible)return;
  const t=clock.getElapsedTime();
  frameCount++;
- if(frameCount%3===0){
-  const pos=sea.geometry.attributes.position;
-  for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);pos.setZ(i,Math.sin(x*.12+t)*.14+Math.cos(y*.1+t*.8)*.09)}
-  pos.needsUpdate=true;
- }
+ // v5 terrain is static for mobile performance
+ baseFlags.forEach((f,i)=>{f.userData.flag.rotation.y=(i?Math.PI:0)+Math.sin(t*1.7+i)*.07});
+ controls.target.x=THREE.MathUtils.clamp(controls.target.x,-82,82);
+ controls.target.z=THREE.MathUtils.clamp(controls.target.z,-82,82);
  smokeParticles.forEach((p,i)=>{p.userData.life=(p.userData.life+.0028)%1;p.position.y=p.userData.base.y+p.userData.life*7;p.position.x=p.userData.base.x+Math.sin(t*.5+i)*p.userData.life*.8;p.scale.setScalar(.5+p.userData.life*1.5);p.material.opacity=(1-p.userData.life)*.18});
  tanks.forEach((tank,i)=>{const a=t*.12+i*2.1;tank.position.x=Math.sin(a)*15;tank.position.z=Math.cos(a)*7;tank.rotation.y=Math.atan2(Math.cos(a)*15,-Math.sin(a)*7)});
  heliV3.position.x=10+Math.sin(t*.24)*10;heliV3.position.z=-12+Math.cos(t*.24)*6;heliV3.position.y=13+Math.sin(t*.8)*.6;heliV3.userData.rotor.rotation.y=t*20;heliV3.userData.rotor2.rotation.x=t*18;heliV3.rotation.y=-t*.24;
