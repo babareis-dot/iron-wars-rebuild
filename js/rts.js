@@ -1,4 +1,4 @@
-const A="./assets/";
+const A=new URL("../assets/", import.meta.url).href;
 export class Game{
 constructor(canvas,mini){
  this.c=canvas;this.x=canvas.getContext("2d");this.m=mini;this.mx=mini.getContext("2d");
@@ -46,10 +46,10 @@ production(type,rate){let sec=60;panel.innerHTML=`<h2>${type} üretimi</h2><h1 i
 attackSelected(){if(!this.selectedEnemy||this.attackActive)return;this.attackActive=true;attackBtn.disabled=true;combatText.textContent=`${this.selectedEnemy.name} hedefine saldırı başladı...`;
  for(let i=0;i<this.tanks.length;i++){let t=this.tanks[i];t.attackTarget=this.selectedEnemy;t.attackDelay=i*20}
 }
-img(n,x,y,w,h,a=0){let i=this.images[n];if(i?.complete){this.x.save();this.x.translate(x,y);this.x.rotate(a);this.x.drawImage(i,-w/2,-h/2,w,h);this.x.restore()}}
+img(n,x,y,w,h,a=0){let i=this.images[n];if(i?.complete && i.naturalWidth){this.x.save();this.x.translate(x,y);this.x.rotate(a);this.x.drawImage(i,-w/2,-h/2,w,h);this.x.restore()}}
 drawBase(){
- let x=this.x,dirt=this.images["terrain/dirt.jpg"];if(dirt?.complete){let p=x.createPattern(dirt,"repeat");x.fillStyle=p;x.beginPath();x.ellipse(0,20,370,260,0,0,7);x.fill()}
- let fr=this.images["terrain/forest_rocks.png"];if(fr?.complete){x.globalAlpha=.95;x.drawImage(fr,-430,-310,860,430);x.globalAlpha=1}
+ let x=this.x,dirt=this.images["terrain/dirt.jpg"];if(dirt?.complete && dirt.naturalWidth){let p=x.createPattern(dirt,"repeat");x.fillStyle=p;x.beginPath();x.ellipse(0,20,370,260,0,0,7);x.fill()}
+ let fr=this.images["terrain/forest_rocks.png"];if(fr?.complete && fr.naturalWidth){x.globalAlpha=.95;x.drawImage(fr,-430,-310,860,430);x.globalAlpha=1}
  x.fillStyle="#4d5149";x.fillRect(-62,40,124,240);x.fillStyle="#2f3432";x.fillRect(-6,40,12,240);
  for(let b of this.buildings){let lv=this.levels[b.n]||1,s=1+Math.min(24,lv-1)*.022;this.img("buildings/"+b.s,b.x,b.y,280*s,186*s)}
  this.img("buildings/flag.png",-75,-185,76,118);this.img("buildings/flag.png",75,-185,76,118);
@@ -91,7 +91,7 @@ drawUnits(){
 draw(){
  this.updateCombat();
  let w=this.c.width/this.dpr,h=this.c.height/this.dpr,x=this.x;x.setTransform(this.dpr,0,0,this.dpr,0,0);x.clearRect(0,0,w,h);
- let g=this.images["terrain/grass_field.jpg"];if(g?.complete){let p=x.createPattern(g,"repeat");x.fillStyle=p;x.fillRect(0,0,w,h)}else{x.fillStyle="#968b59";x.fillRect(0,0,w,h)}
+ let g=this.images["terrain/grass_field.jpg"];if(g?.complete && g.naturalWidth){let p=x.createPattern(g,"repeat");x.fillStyle=p;x.fillRect(0,0,w,h)}else{x.fillStyle="#968b59";x.fillRect(0,0,w,h)}
  x.save();x.translate(w/2+this.cam.x,h/2+this.cam.y);x.scale(this.cam.z,this.cam.z);
  // roads to other bases
  x.strokeStyle="rgba(80,76,54,.7)";x.lineWidth=26;for(let e of this.enemies){x.beginPath();x.moveTo(0,0);x.lineTo(e.x,e.y);x.stroke()}
