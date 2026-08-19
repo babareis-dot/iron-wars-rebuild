@@ -1,4 +1,4 @@
-console.log("IRON WARS REBUILD v7 WORLD BASE loaded");
+console.log("IRON WARS V9 DW-STYLE BASE loaded");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -65,6 +65,7 @@ function addBuilding(id,name,x,z,w,d,h,resource=null){
  for(let i=0;i<3;i++){const lamp=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.08),glowMat);lamp.position.set(-w*.28+i*w*.28,h*.56,d/2+.05);group.add(lamp)}
  const ring=new THREE.Mesh(new THREE.RingGeometry(Math.max(w,d)*.62,Math.max(w,d)*.72,32),new THREE.MeshBasicMaterial({color:0xf0c55c,transparent:true,opacity:0,side:THREE.DoubleSide}));
  ring.rotation.x=-Math.PI/2;ring.position.y=.04;group.add(ring);group.userData.ring=ring;
+ group.visible=false;
  scene.add(group);buildings.push(group);return group;
 }
 addBuilding('hq','Komuta Merkezi',0,-1,7,6,6,null);
@@ -75,6 +76,95 @@ addBuilding('gold','Altın Rafinerisi',10,-6,4,4,5,'gold');
 addBuilding('tank','Tank Üretim Merkezi',-3,10,8,5,4,null);
 addBuilding('air','Hava Üssü',14,1,8,6,3,null);
 addBuilding('dock','Tersane',17,11,8,5,3,null);
+
+// V9 — compact DW-inspired base composition, original Iron Wars geometry.
+const v9=new THREE.Group(); scene.add(v9);
+const earth=new THREE.MeshStandardMaterial({color:0x6b6747,roughness:1});
+const stone=new THREE.MeshStandardMaterial({color:0x77766a,roughness:1});
+const armyGreen=new THREE.MeshStandardMaterial({color:0x3d493b,roughness:.82,metalness:.08});
+const armyDark=new THREE.MeshStandardMaterial({color:0x252e2c,roughness:.78,metalness:.15});
+const redMat=new THREE.MeshStandardMaterial({color:0x8f2420,roughness:.75});
+const padMat=new THREE.MeshStandardMaterial({color:0x4d5048,roughness:1});
+
+function box(x,z,w,d,h,mat=armyGreen,y=1.72){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y+h/2,z);m.castShadow=true;m.receiveShadow=true;v9.add(m);return m;
+}
+function rock(x,z,s=.7){
+ const m=new THREE.Mesh(new THREE.DodecahedronGeometry(s,0),stone);m.scale.y=.65;m.position.set(x,1.8,z);m.rotation.set(Math.random(),Math.random(),Math.random());v9.add(m);
+}
+function pine(x,z,s=1){
+ const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,1.1,6),armyDark);trunk.position.set(x,2.15,z);v9.add(trunk);
+ const crown=new THREE.Mesh(new THREE.ConeGeometry(.65*s,1.8*s,7),new THREE.MeshStandardMaterial({color:0x263d2d,roughness:1}));crown.position.set(x,3.0,z);v9.add(crown);
+}
+function v9Flag(x,z,side=1){
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,3.2,8),armyDark);pole.position.set(x,3.25,z);v9.add(pole);
+ const f=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.62),redMat);f.position.set(x+.55*side,4.25,z);f.rotation.y=side<0?Math.PI:0;v9.add(f);
+}
+function missile(x,z,rot=0){
+ const g=new THREE.Group();g.position.set(x,1.75,z);g.rotation.y=rot;
+ const pad=new THREE.Mesh(new THREE.BoxGeometry(1.25,.16,1.55),padMat);pad.position.y=.08;g.add(pad);
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(.13,.18,2.45,10),armyDark);body.rotation.z=-.34;body.position.set(0,1.22,0);g.add(body);
+ const tip=new THREE.Mesh(new THREE.ConeGeometry(.13,.42,10),redMat);tip.rotation.z=-.34;tip.position.set(.14,2.45,0);g.add(tip);
+ v9.add(g);
+}
+function factory(x,z,level=1,type="factory"){
+ const scale=1+Math.min(level-1,24)*.025;
+ const g=new THREE.Group();g.position.set(x,1.72,z);g.scale.setScalar(scale);
+ const main=new THREE.Mesh(new THREE.BoxGeometry(4.4,2.1,3.1),armyGreen);main.position.y=1.05;g.add(main);
+ const wing=new THREE.Mesh(new THREE.BoxGeometry(2.2,1.45,2.4),armyGreen);wing.position.set(2.5,.72,.25);g.add(wing);
+ const roof=new THREE.Mesh(new THREE.BoxGeometry(3.5,.25,2.25),armyDark);roof.position.set(-.2,2.22,0);g.add(roof);
+ if(type==="steel"||type==="fuel"){for(let i=0;i<2;i++){const c=new THREE.Mesh(new THREE.CylinderGeometry(.22,.3,2.5,10),armyDark);c.position.set(-1.3+i*.75,3.15,-.55);g.add(c)}}
+ for(let i=0;i<3;i++){const w=new THREE.Mesh(new THREE.BoxGeometry(.22,.18,.05),glowMat);w.position.set(-1+i*.75,1.05,1.58);g.add(w)}
+ v9.add(g);return g;
+}
+function radarV9(x,z){
+ const g=new THREE.Group();g.position.set(x,1.72,z);
+ const base=new THREE.Mesh(new THREE.CylinderGeometry(1.35,1.55,.65,18),armyGreen);base.position.y=.33;g.add(base);
+ const mast=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,2.4,8),armyDark);mast.position.y=1.75;g.add(mast);
+ const dish=new THREE.Mesh(new THREE.SphereGeometry(1.15,18,10,0,Math.PI*2,0,Math.PI/2),armyDark);dish.scale.z=.22;dish.rotation.x=-.55;dish.position.y=3;g.add(dish);
+ v9.add(g);g.userData.dish=dish;return g;
+}
+function rangeTower(x,z){
+ const g=new THREE.Group();g.position.set(x,1.72,z);
+ for(const sx of [-.65,.65])for(const sz of [-.65,.65]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,2.8,6),armyDark);l.position.set(sx,1.4,sz);g.add(l)}
+ const top=new THREE.Mesh(new THREE.BoxGeometry(1.8,.45,1.8),armyGreen);top.position.y=2.8;g.add(top);v9.add(g);
+}
+function hammer(x,z){
+ const g=new THREE.Group();g.position.set(x,1.78,z);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(2.4,.7,1.25),armyGreen);body.position.y=.55;g.add(body);
+ for(const sx of [-.8,.8]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.22,12),armyDark);wheel.rotation.x=Math.PI/2;wheel.position.set(sx,.28,.7);g.add(wheel)}
+ const turret=new THREE.Mesh(new THREE.BoxGeometry(.8,.35,.7),armyDark);turret.position.set(.2,1.0,0);g.add(turret);
+ v9.add(g);
+}
+
+// Base pad and clustered factories; intentionally not a copy of DW5 assets.
+const basePad=new THREE.Mesh(new THREE.CircleGeometry(21,32),earth);basePad.rotation.x=-Math.PI/2;basePad.position.y=1.56;v9.add(basePad);
+factory(-2,-1,1,"hq"); factory(-7,1,1,"steel"); factory(4,1,1,"copper"); factory(8,-2,1,"fuel");
+factory(-5,-5,1,"factory"); factory(3,-5,1,"factory");
+v9Flag(-2,-4.2,1); v9Flag(1.2,-4.2,-1);
+
+// Vehicle exit lane in the middle.
+box(0,-8,5.5,7,.12,padMat,1.58); hammer(0,-7.2);
+
+// Front and rear missile rows: 18 total capacity.
+const missileSlots=[];
+for(let row=0;row<2;row++) for(let i=0;i<9;i++){
+ const x=-12+i*3, z=-12-row*3.0; missile(x,z,0); missileSlots.push({x,z});
+}
+
+// Radar + range/Hammer support structures.
+const v9Radar=radarV9(11,5); rangeTower(-12,5); rangeTower(14,-2);
+
+// Dense rocks/trees around and behind the base, keeping the front clear.
+for(let i=0;i<42;i++){
+ const a=Math.random()*Math.PI*1.45+.75, r=17+Math.random()*7;
+ const x=Math.cos(a)*r, z=Math.sin(a)*r;
+ (i%3?pine:rock)(x,z,.65+Math.random()*.6);
+}
+
+// Low rear blast wall behind missile rows.
+for(let i=0;i<12;i++) box(-16.5+i*3,-17.1,2.6,.35,.85,armyDark,1.58);
+
 // v2: procedural military details — all separate 3D objects
 const metal=new THREE.MeshStandardMaterial({color:0x38454b,roughness:.55,metalness:.55});
 const concrete=new THREE.MeshStandardMaterial({color:0x5d6868,roughness:.92});
@@ -529,7 +619,7 @@ function animate(){
  ships[0].position.x=24+Math.sin(t*.08)*2.2;
  ships[1].position.x=22+Math.sin(t*.11+1)*1.5;
 
- radarUnit.userData.dish.rotation.z=t*.45;
+ radarUnit.userData.dish.rotation.z=t*.45; if(v9Radar?.userData?.dish) v9Radar.userData.dish.rotation.z=t*.55;
  towers.forEach((tw,i)=>tw.userData.beacon.material.emissiveIntensity=2.2+Math.sin(t*4+i)*1.4);
 
  controls.update();renderer.render(scene,camera);
