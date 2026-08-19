@@ -1,4 +1,4 @@
-# IRON WARS — REBUILD v1
+# IRON WARS — REBUILD v2
 
 Bu proje önceki sürümlerden bağımsız, sıfırdan hazırlanmış gerçek 3D tarayıcı RTS temelidir.
 
@@ -38,3 +38,6 @@ Sonraki aşamalar:
 - Tank/uçak/gemi üretim kuyruğu
 - Dünya haritası
 - PvP ve online hesap/backend
+
+## v2
+Daha karanlık/sinematik ışık, radar, askeri kuleler, pist, hangarlar, liman iskeleleri, üs duvarları, sokak lambaları, kasalar ve daha detaylı askeri sahne eklendi.

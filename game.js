@@ -9,8 +9,8 @@ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x7890a0);
-scene.fog=new THREE.FogExp2(0x7d919c,0.012);
+scene.background=new THREE.Color(0x172832);
+scene.fog=new THREE.FogExp2(0x233b45,0.010);
 
 const camera=new THREE.PerspectiveCamera(48,1,0.1,500);
 camera.position.set(34,30,40);
@@ -26,8 +26,8 @@ controls.minPolarAngle=Math.PI*.20;
 controls.enablePan=true;
 controls.screenSpacePanning=false;
 
-const hemi=new THREE.HemisphereLight(0xcfe9ff,0x3e4a36,1.8);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffefcf,3.2);sun.position.set(-20,35,12);sun.castShadow=true;
+const hemi=new THREE.HemisphereLight(0x8eb9ce,0x17231c,1.15);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffd9a3,2.35);sun.position.set(-20,35,12);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;scene.add(sun);
 
 const seaMat=new THREE.MeshStandardMaterial({color:0x24596d,roughness:.3,metalness:.15,transparent:true,opacity:.96});
@@ -65,6 +65,66 @@ addBuilding('gold','Altın Rafinerisi',10,-6,4,4,5,'gold');
 addBuilding('tank','Tank Üretim Merkezi',-3,10,8,5,4,null);
 addBuilding('air','Hava Üssü',14,1,8,6,3,null);
 addBuilding('dock','Tersane',17,11,8,5,3,null);
+// v2: procedural military details — all separate 3D objects
+const metal=new THREE.MeshStandardMaterial({color:0x38454b,roughness:.55,metalness:.55});
+const concrete=new THREE.MeshStandardMaterial({color:0x5d6868,roughness:.92});
+const redGlow=new THREE.MeshStandardMaterial({color:0xff3b22,emissive:0xff1600,emissiveIntensity:3});
+const amberGlow=new THREE.MeshStandardMaterial({color:0xffbd58,emissive:0xff7a00,emissiveIntensity:2});
+
+function tower(x,z,h=8){
+ const g=new THREE.Group();g.position.set(x,1.65,z);
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.28,.42,h,8),metal);shaft.position.y=h/2;shaft.castShadow=true;g.add(shaft);
+ for(let y=1.2;y<h;y+=1.4){const ring=new THREE.Mesh(new THREE.TorusGeometry(.52,.055,6,16),metal);ring.rotation.x=Math.PI/2;ring.position.y=y;g.add(ring)}
+ const beacon=new THREE.Mesh(new THREE.SphereGeometry(.16,10,10),redGlow);beacon.position.y=h+.25;g.add(beacon);g.userData.beacon=beacon;scene.add(g);return g;
+}
+const towers=[tower(2,-2,9),tower(-17,5,7),tower(13,-8,6)];
+
+function radar(x,z){
+ const g=new THREE.Group();g.position.set(x,2,z);
+ const base=new THREE.Mesh(new THREE.CylinderGeometry(1.8,2.2,1.1,24),concrete);base.position.y=.55;g.add(base);
+ const dish=new THREE.Mesh(new THREE.SphereGeometry(1.55,24,12,0,Math.PI*2,0,Math.PI*.46),metal);
+ dish.scale.y=.35;dish.rotation.x=-.9;dish.position.y=2.25;g.add(dish);g.userData.dish=dish;scene.add(g);return g;
+}
+const radarUnit=radar(-8,-8);
+
+function hangar(x,z,rot=0){
+ const g=new THREE.Group();g.position.set(x,1.7,z);g.rotation.y=rot;
+ const b=new THREE.Mesh(new THREE.BoxGeometry(6,2.5,4),metal);b.position.y=1.25;b.castShadow=true;g.add(b);
+ const door=new THREE.Mesh(new THREE.BoxGeometry(4.2,1.65,.08),darkMat);door.position.set(0,1.05,2.04);g.add(door);
+ for(let i=-1;i<=1;i++){const l=new THREE.Mesh(new THREE.SphereGeometry(.09,8,8),amberGlow);l.position.set(i*1.5,2.25,2.1);g.add(l)}
+ scene.add(g);return g;
+}
+hangar(11,4,.1);hangar(16,5,.1);
+
+function runway(){
+ const r=new THREE.Mesh(new THREE.BoxGeometry(18,.12,4.8),new THREE.MeshStandardMaterial({color:0x20272b,roughness:.9}));
+ r.position.set(13,1.7,0);r.rotation.y=-.08;scene.add(r);
+ for(let i=-7;i<=7;i+=2){const m=new THREE.Mesh(new THREE.BoxGeometry(.8,.04,.12),new THREE.MeshBasicMaterial({color:0xe8d59b}));m.position.set(13+i,1.78,-i*.08);m.rotation.y=-.08;scene.add(m)}
+}
+runway();
+
+function dockPier(x,z,w,d){
+ const p=new THREE.Mesh(new THREE.BoxGeometry(w,.35,d),concrete);p.position.set(x,1.45,z);p.castShadow=true;p.receiveShadow=true;scene.add(p);
+}
+dockPier(17,15,12,2);dockPier(20,11,2,10);
+
+function lamp(x,z){
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,2.3,6),metal);pole.position.set(x,2.85,z);scene.add(pole);
+ const bulb=new THREE.PointLight(0xffb75b,.8,6,2);bulb.position.set(x,4,z);scene.add(bulb);
+}
+for(let x=-16;x<=16;x+=5){lamp(x,2.8);lamp(x,-2.8)}
+
+function wallSegment(x,z,w,d){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,1.2,d),concrete);m.position.set(x,2.1,z);m.castShadow=true;scene.add(m);
+}
+wallSegment(0,-23,38,.6);wallSegment(-22,0,.6,38);wallSegment(22,0,.6,38);
+
+const crates=[];
+for(let i=0;i<18;i++){
+ const c=new THREE.Mesh(new THREE.BoxGeometry(.7,.7,.7),new THREE.MeshStandardMaterial({color:0x705234,roughness:.9}));
+ c.position.set(-5+Math.random()*10,2.05,14+Math.random()*3);c.rotation.y=Math.random()*Math.PI;c.castShadow=true;scene.add(c);crates.push(c);
+}
+
 
 function chimney(parent,ox,oz,h=5){
  const c=new THREE.Mesh(new THREE.CylinderGeometry(.35,.48,h,10),darkMat);c.position.set(ox,h/2+.4,oz);c.castShadow=true;parent.add(c);
@@ -205,6 +265,9 @@ function animate(){
  tanks.forEach((tank,i)=>{const a=t*.12+i*2.1;tank.position.x=Math.sin(a)*15;tank.position.z=Math.cos(a)*7;tank.rotation.y=Math.atan2(Math.cos(a)*15,-Math.sin(a)*7)});
  heli.position.x=10+Math.sin(t*.24)*10;heli.position.z=-12+Math.cos(t*.24)*6;heli.position.y=13+Math.sin(t*.8)*.6;heli.userData.rotor.rotation.y=t*20;heli.rotation.y=-t*.24;
  glowMat.emissiveIntensity=1.8+Math.sin(t*2.2)*.5;
+ radarUnit.userData.dish.rotation.z=t*.45;
+ towers.forEach((tw,i)=>tw.userData.beacon.material.emissiveIntensity=2.2+Math.sin(t*4+i)*1.4);
+
  controls.update();renderer.render(scene,camera);
 }
 animate();

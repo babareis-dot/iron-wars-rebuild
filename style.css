@@ -41,3 +41,10 @@ button{font:inherit;color:inherit}
  .left-panel{top:52px;left:5px;width:110px}.commander{padding:5px}.left-panel button{height:30px;font-size:8px}.right-panel{top:55px;right:5px}.right-panel button{width:43px;height:39px;font-size:14px}
  .dock{height:50px;padding:4px}.dock button{min-width:0;width:15%;font-size:14px}.dock span{font-size:5px}#hint{bottom:56px;font-size:7px}
 }
+
+/* v2 visual upgrade */
+body{background:#020608}
+#game:after{content:"";pointer-events:none;position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,transparent 42%,rgba(0,0,0,.34) 100%);z-index:1}
+.topbar,.left-panel,.right-panel,.dock,#hint{z-index:5}
+.topbar{background:linear-gradient(180deg,rgba(4,11,15,.97),rgba(5,14,19,.91));box-shadow:0 4px 20px #0008}
+.left-panel button,.right-panel button,.dock button,.commander{backdrop-filter:blur(8px);box-shadow:inset 0 0 18px #0005}
